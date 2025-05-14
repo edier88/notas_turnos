@@ -1,0 +1,95 @@
+-_-_-_-_-_-_-_-_-_-_ COMANDOS DE INTERES PARA ROUTERS Y SWITCHES DE EMCALI -_-_-_-_-_-_-_-_-_-_
+
+
+-> Huawei Routers
+
+# Mostrar parametros ópticos de alguna interfaz:
+display transceiver interface XGigabitEthernet 4/0/7 verbose
+
+# Para los BRAS
+display interface description | include <description>
+display current-configuration interface Eth-Trunk 15.32251043
+
+- Consultar profile:
+display qos-profile configuration
+display qos-profile application 100MEGAS
+
+- Modificar profile:
+system-view
+interface Eth-Trunk16.32261125
+undo qos-profile inbound
+undo qos-profile outbound
+qos-profile 200MEGAS inbound identifier none
+qos-profile 200MEGAS outbound identifier none
+
+- Sacar ping por publica o privada
+ping -vpn-instance bras_vrf2 -c 5 <direccion_ip>
+ping -i Eth-Trunk11.32211235 -c 5 -vpn-instance bras_vrf2 <direccion_ip>
+
+
+-> Juniper Routers
+
+# Mostrar parametros ópticos de alguna interfaz:
+show interfaces diagnostics optics xe-2/0/2
+
+# Mostrar todas las interfaces y su estado
+show interfaces terse
+
+
+
+
+-_-_- -_-_- -_-_- -_-_- -_-_- -_-_-
+CÓMO SABER SI UNA IP PUBLICA DE EMCALI SÍ TIENE SALIDA HACIA INTERNET
+
+SE USA COMO EJEMPLO LA IP 186.27.137.14
+_-_-_ _-_-_ _-_-_ _-_-_ _-_-_ _-_-_
+
+
+--- --- --- --- --- --- --- --- ---
+En Juniper:
+--- --- --- --- --- --- --- --- ---
+
+{master}
+edguzman@GUAB_MX480_01> show route 186.27.137.14 
+
+inet.0: 977961 destinations, 2891597 routes (969221 active, 1 holddown, 8965 hidden)
++ = Active Route, - = Last Active, * = Both
+
+186.27.128.0/20    *[OSPF/150] 19w0d 00:54:10, metric 1, tag 3489725528
+                    >  to 172.16.75.60 via ae18.75
+
+Allot-Pornografia.inet.0: 6 destinations, 6 routes (6 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
+
+0.0.0.0/0          *[Static/5] 3w6d 04:07:50
+                    >  to 4.15.158.53 via ae1.165
+
+{master}
+
+--- --- --- --- --- --- --- --- ---
+Despues nos vamos al BRAS de respectivo, en este caso el de SAFE:
+--- --- --- --- --- --- --- --- ---
+
+<SAFE_NE40_1>display current-configuration configuration | begin ip pool
+
+--- --- --- --- --- --- --- --- ---
+Buscamos el gateway del pool indicado por el Juniper (186.27.128.0/20), en este caso el que nos sirve es este:
+--- --- --- --- --- --- --- --- ---
+
+#
+ip pool pool2 bas local
+ vpn-instance bras_vrf2
+ gateway 186.27.128.1 255.255.240.0
+ section 0 186.27.128.2 186.27.143.254
+ dns-server 8.8.8.8
+ 
+ --- --- --- --- --- --- --- --- ---
+ Con ese gateway (186.27.128.1) ponemos el siguiente comando:
+ --- --- --- --- --- --- --- --- ---
+ 
+ping -a 186.27.128.1 -vpn-instance vrf_bras 8.8.8.8
+
+--- --- --- --- --- --- --- --- ---
+Si nos da ping quiere decir que esa IP publica sí tiene salida a internet,
+si no se debe avisar a los administradores para que la enruten de forma correcta
+--- --- --- --- --- --- --- --- ---
