@@ -93,3 +93,23 @@ ping -a 186.27.128.1 -vpn-instance vrf_bras 8.8.8.8
 Si nos da ping quiere decir que esa IP publica sí tiene salida a internet,
 si no se debe avisar a los administradores para que la enruten de forma correcta
 --- --- --- --- --- --- --- --- ---
+
+
+
+
+
+---------------->>>>>>>>> Juniper MX960 Routers
+
+- FLOR_MX960:
+Opera los anillos 1,2,3
+
+- LIMO_MX960:
+Opera los anillos 4,5,6
+
+Standar de nombres de las interfaces de los BRAS MX960:
+<vlan interna> + 4096
+
+- En vez de VRF en MX960 se llama routing-instance, por ejemplo:
+ping 192.168.11.45 routing-instance HSI-CORP
+
+
