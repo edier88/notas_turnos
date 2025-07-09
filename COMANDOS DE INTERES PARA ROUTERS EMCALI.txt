@@ -112,4 +112,4 @@ Standar de nombres de las interfaces de los BRAS MX960:
 - En vez de VRF en MX960 se llama routing-instance, por ejemplo:
 ping 192.168.11.45 routing-instance HSI-CORP
 
-
+- show routing
