@@ -125,3 +125,8 @@ show interfaces descriptions | match 5311
 
 - Ver configuracion de interfaz:
 show configuration interfaces ae1.5192 | display set
+
+- Eliminar configuración de dedicado
+delete routing-instances HSI-CORP interface ae1.5207
+delete routing-instances HSI-CORP routing-options static route 190.99.193.172/30 next-hop 192.168.15.246
+delete interfaces ae1 unit 5207
